@@ -1,7 +1,6 @@
 package cn.tovi;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -18,15 +17,34 @@ public class CustomMenu extends RelativeLayout {
     private static final String TAG = CustomMenu.class.getSimpleName();
 
     private Context context;
+    /**
+     * 左侧Menu
+     */
     private FrameLayout leftMenu;
+    /**
+     * 中间Menu
+     */
     private FrameLayout middleMenu;
+    /**
+     * 右侧Menu
+     */
     private FrameLayout rightMenu;
+    /**
+     * 中部遮罩
+     */
+    private FrameLayout middleMask;
+    /**
+     * 滚动器
+     */
     private Scroller mScroller;
 
 
     private int mTouchSlop;
     private int mMinimumVelocity;
     private int mMaximumVelocity;
+    /**
+     * 速度管理器
+     */
     private VelocityTracker mVelocityTracker;
 
     public CustomMenu(Context context) {
@@ -44,16 +62,17 @@ public class CustomMenu extends RelativeLayout {
         leftMenu = new FrameLayout(context);
         middleMenu = new FrameLayout(context);
         rightMenu = new FrameLayout(context);
-        leftMenu.setBackgroundColor(Color.RED);
-        middleMenu.setBackgroundColor(Color.GREEN);
-        rightMenu.setBackgroundColor(Color.RED);
+        middleMask = new FrameLayout(context);
 
         leftMenu.setBackgroundResource(R.drawable.left_menu);
         middleMenu.setBackgroundResource(R.drawable.main_ui);
         rightMenu.setBackgroundResource(R.drawable.right_menu);
+        middleMask.setBackgroundColor(0x88000000);
+        middleMask.setAlpha(0f);
 
         addView(leftMenu);
         addView(middleMenu);
+        addView(middleMask);
         addView(rightMenu);
 
 
@@ -65,10 +84,23 @@ public class CustomMenu extends RelativeLayout {
     }
 
     @Override
+    public void scrollTo(int x, int y) {
+        super.scrollTo(x, y);
+
+
+        //设置遮罩的透明度(这里以 “当前视图的偏移量/菜单的宽度” 的值作为透明度)
+        int curX = Math.abs(getScrollX());
+        float scale = curX / (float) leftMenu.getMeasuredWidth();
+        middleMask.setAlpha(scale);
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         middleMenu.measure(widthMeasureSpec, heightMeasureSpec);
+        middleMask.measure(widthMeasureSpec, heightMeasureSpec);
         int realWidth = MeasureSpec.getSize(widthMeasureSpec);
+        //宽度是middleMenu宽度的八成;MeasureSpec.EXACTLY:精确
         int tempWidthMeasure = MeasureSpec.makeMeasureSpec(
                 (int) (realWidth * 0.8f), MeasureSpec.EXACTLY);
         leftMenu.measure(tempWidthMeasure, heightMeasureSpec);
@@ -79,6 +111,7 @@ public class CustomMenu extends RelativeLayout {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         middleMenu.layout(l, t, r, b);
+        middleMask.layout(l, t, r, b);
         leftMenu.layout(l - leftMenu.getMeasuredWidth(), t,
                 r - middleMenu.getMeasuredWidth(), b);
         rightMenu.layout(
@@ -89,7 +122,7 @@ public class CustomMenu extends RelativeLayout {
     }
 
     private boolean isTestCompete;
-    private boolean isleftrightEvent;
+    private boolean isLeftrightEvent;
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -98,7 +131,7 @@ public class CustomMenu extends RelativeLayout {
             getEventType(ev);
             return true;
         }
-        if (isleftrightEvent) {
+        if (isLeftrightEvent) {
             switch (ev.getActionMasked()) {
                 case MotionEvent.ACTION_MOVE:
                     int curScrollX = getScrollX();// 当前整体视图的位置(矢量。+表示视图发生了左移;-表示视图发生了右移。
@@ -131,7 +164,7 @@ public class CustomMenu extends RelativeLayout {
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
                     touchUp();
-                    isleftrightEvent = false;
+                    isLeftrightEvent = false;
                     isTestCompete = false;
                     break;
             }
@@ -139,7 +172,7 @@ public class CustomMenu extends RelativeLayout {
             switch (ev.getActionMasked()) {
                 case MotionEvent.ACTION_UP:
                     touchUp();
-                    isleftrightEvent = false;
+                    isLeftrightEvent = false;
                     isTestCompete = false;
                     break;
 
@@ -153,12 +186,12 @@ public class CustomMenu extends RelativeLayout {
 
     @Override
     public void computeScroll() {
-        if (mScroller.computeScrollOffset()) {
+        if (mScroller.computeScrollOffset()) {//调用此方法，想要获取最新的当前位置。返回true:滑动没有停止;返回false：滑动停止
             int tempX = mScroller.getCurrX();
             scrollTo(tempX, 0);
             postInvalidate();
 
-            if (mScroller.isFinished())
+            if (mScroller.isFinished())//如果滚动停止，检测位置
                 checkLocationInStop();
         }
     }
@@ -181,12 +214,12 @@ public class CustomMenu extends RelativeLayout {
                 int dX = Math.abs((int) ev.getX() - point.x);
                 int dY = Math.abs((int) ev.getY() - point.y);
                 if (dX >= TEST_DIS && dX > dY) { // 左右滑动
-                    isleftrightEvent = true;
+                    isLeftrightEvent = true;
                     isTestCompete = true;
                     point.x = (int) ev.getX();
                     point.y = (int) ev.getY();
                 } else if (dY >= TEST_DIS && dY > dX) { // 上下滑动
-                    isleftrightEvent = false;
+                    isLeftrightEvent = false;
                     isTestCompete = true;
                     point.x = (int) ev.getX();
                     point.y = (int) ev.getY();
@@ -196,7 +229,7 @@ public class CustomMenu extends RelativeLayout {
             case MotionEvent.ACTION_CANCEL:
                 super.dispatchTouchEvent(ev);
                 touchUp();
-                isleftrightEvent = false;
+                isLeftrightEvent = false;
                 isTestCompete = false;
                 break;
         }
@@ -211,10 +244,10 @@ public class CustomMenu extends RelativeLayout {
         // x轴方向的速度(矢量。+表示x轴正反向，及试图向右走；-表示x轴反方向，及试图向左走)
         int initialVelocity = (int) velocityTracker.getXVelocity();
         if ((Math.abs(initialVelocity) > mMinimumVelocity)
-                && getChildCount() > 0) {
+                && getChildCount() > 0) {//如果速度达到一定值，并且有子类，则开始滑动
             Log.e("", "initialVelocity:" + initialVelocity);
             fling(initialVelocity, 0);
-        } else {
+        } else {//检测位置
             checkLocationInStop();
         }
         releaseVelocityTracker();
