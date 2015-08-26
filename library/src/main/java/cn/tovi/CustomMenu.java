@@ -81,7 +81,7 @@ public class CustomMenu extends RelativeLayout {
 
         addView(leftMenu);
         addView(middleMenu);
-//        addView(middleMask);//注释遮罩
+        addView(middleMask);//注释遮罩
         addView(rightMenu);
 
 
