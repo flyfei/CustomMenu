@@ -2,6 +2,7 @@ package cn.tovi;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -70,9 +71,17 @@ public class CustomMenu extends RelativeLayout {
         middleMask.setBackgroundColor(0x88000000);
         middleMask.setAlpha(0f);
 
+        //设置阴影
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            leftMenu.setElevation(120);
+            rightMenu.setElevation(120);
+        } else {
+            leftMenu.setBackgroundResource(R.drawable.menu_background);
+        }
+
         addView(leftMenu);
         addView(middleMenu);
-        addView(middleMask);
+//        addView(middleMask);//注释遮罩
         addView(rightMenu);
 
 
@@ -91,7 +100,7 @@ public class CustomMenu extends RelativeLayout {
         //设置遮罩的透明度(这里以 “当前视图的偏移量/菜单的宽度” 的值作为透明度)
         int curX = Math.abs(getScrollX());
         float scale = curX / (float) leftMenu.getMeasuredWidth();
-        middleMask.setAlpha(scale);
+        middleMask.setAlpha(scale * 0.8f);
     }
 
     @Override
