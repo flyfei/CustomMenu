@@ -11,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -68,10 +67,11 @@ public class CustomMenu extends RelativeLayout {
     }
 
     public void setLeftMenu(View view) {
+        initLeftMenu();
         if (view != null) {
             leftMenu.removeView(view);
         }
-        leftMenu.setPadding(0,0,0,0);
+        leftMenu.setPadding(0, 0, 0, 0);
         leftMenu.addView(view);
     }
 
@@ -83,9 +83,9 @@ public class CustomMenu extends RelativeLayout {
         if (view != null) {
             middleMenu.removeView(view);
         }
-        middleMenu.setPadding(0,0,0,0);
-        middleMenu.addView(view,new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT));
-        Log.e("","left:"+middleMenu.getPaddingLeft());
+        middleMenu.setPadding(0, 0, 0, 0);
+        middleMenu.addView(view, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        Log.e("", "left:" + middleMenu.getPaddingLeft());
     }
 
     public void setRightMenu(@LayoutRes int resid) {
@@ -93,37 +93,29 @@ public class CustomMenu extends RelativeLayout {
     }
 
     public void setRightMenu(View view) {
+        initRightMenu();
         if (view != null) {
             rightMenu.removeView(view);
-            rightMenu.addView(view);
         }
+        rightMenu.setPadding(0, 0, 0, 0);
+        rightMenu.addView(view);
     }
 
     private void initView(Context context) {
         this.context = context;
-        leftMenu = new FrameLayout(context);
         middleMenu = new FrameLayout(context);
-        rightMenu = new FrameLayout(context);
+//        rightMenu = new FrameLayout(context);
         middleMask = new FrameLayout(context);
 
-        leftMenu.setBackgroundResource(R.drawable.left_menu);
         middleMenu.setBackgroundResource(R.drawable.main_ui);
-        rightMenu.setBackgroundResource(R.drawable.right_menu);
+//        rightMenu.setBackgroundResource(R.drawable.right_menu);
         middleMask.setBackgroundColor(0x88000000);
         middleMask.setAlpha(0f);
 
-        //设置阴影
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            leftMenu.setElevation(120);
-            rightMenu.setElevation(120);
-        } else {
-            leftMenu.setBackgroundResource(R.drawable.menu_background);
-        }
 
-        addView(leftMenu);
         addView(middleMenu);
 //        addView(middleMask);//注释遮罩
-        addView(rightMenu);
+//        addView(rightMenu);
 
 
         mScroller = new Scroller(context, new DecelerateInterpolator());
@@ -133,6 +125,36 @@ public class CustomMenu extends RelativeLayout {
         mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
     }
 
+    private void initLeftMenu() {
+        if (leftMenu != null)
+            return;
+        leftMenu = new FrameLayout(context);
+        leftMenu.setBackgroundResource(R.drawable.left_menu);
+
+        //设置阴影
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            leftMenu.setElevation(120);
+        } else {
+            leftMenu.setBackgroundResource(R.drawable.menu_background);
+        }
+        addView(leftMenu);
+    }
+
+    private void initRightMenu() {
+        if (rightMenu != null)
+            return;
+        rightMenu = new FrameLayout(context);
+        rightMenu.setBackgroundResource(R.drawable.right_menu);
+
+        //设置阴影
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            rightMenu.setElevation(120);
+        } else {
+//            leftMenu.setBackgroundResource(R.drawable.menu_background);
+        }
+        addView(rightMenu);
+    }
+
     @Override
     public void scrollTo(int x, int y) {
         super.scrollTo(x, y);
@@ -140,7 +162,7 @@ public class CustomMenu extends RelativeLayout {
 
         //设置遮罩的透明度(这里以 “当前视图的偏移量/菜单的宽度” 的值作为透明度)
         int curX = Math.abs(getScrollX());
-        float scale = curX / (float) leftMenu.getMeasuredWidth();
+        float scale = curX / (curX > 0 ? (float) (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) : (float) (leftMenu == null ? 0 : leftMenu.getMeasuredWidth()));
         middleMask.setAlpha(scale * 0.8f);
     }
 
@@ -153,8 +175,10 @@ public class CustomMenu extends RelativeLayout {
         //宽度是middleMenu宽度的八成;MeasureSpec.EXACTLY:精确
         int tempWidthMeasure = MeasureSpec.makeMeasureSpec(
                 (int) (realWidth * 0.8f), MeasureSpec.EXACTLY);
-        leftMenu.measure(tempWidthMeasure, heightMeasureSpec);
-        rightMenu.measure(tempWidthMeasure, heightMeasureSpec);
+        if (leftMenu != null)
+            leftMenu.measure(tempWidthMeasure, heightMeasureSpec);
+        if (rightMenu != null)
+            rightMenu.measure(tempWidthMeasure, heightMeasureSpec);
     }
 
     @Override
@@ -162,13 +186,15 @@ public class CustomMenu extends RelativeLayout {
         super.onLayout(changed, l, t, r, b);
         middleMenu.layout(l, t, r, b);
         middleMask.layout(l, t, r, b);
-        leftMenu.layout(l - leftMenu.getMeasuredWidth(), t,
-                r - middleMenu.getMeasuredWidth(), b);
-        rightMenu.layout(
-                l + middleMenu.getMeasuredWidth(),
-                t,
-                l + middleMenu.getMeasuredWidth()
-                        + rightMenu.getMeasuredWidth(), b);
+        if (leftMenu != null)
+            leftMenu.layout(l - leftMenu.getMeasuredWidth(), t,
+                    r - middleMenu.getMeasuredWidth(), b);
+        if (rightMenu != null)
+            rightMenu.layout(
+                    l + middleMenu.getMeasuredWidth(),
+                    t,
+                    l + middleMenu.getMeasuredWidth()
+                            + rightMenu.getMeasuredWidth(), b);
     }
 
     private boolean isTestCompete;
@@ -199,14 +225,14 @@ public class CustomMenu extends RelativeLayout {
                     int finalX = 0;
 
                     if (expectX < 0) {// <0,按照现在的情况，视图发生了右移，左菜单将会显示。这里加个限制，不能看到左菜单左部的内容
-                        finalX = Math.max(expectX, -leftMenu.getMeasuredWidth());// 显示左Menu
+                        finalX = Math.max(expectX, -(leftMenu == null ? 0 : leftMenu.getMeasuredWidth()));// 显示左Menu
                     } else {// 同理
-                        finalX = Math.min(expectX, rightMenu.getMeasuredWidth());// 显示右Menu
+                        finalX = Math.min(expectX, rightMenu == null ? 0 : rightMenu.getMeasuredWidth());// 显示右Menu
                     }
                     Log.e(TAG, "curScrollX:" + curScrollX + "   dis_x:" + dis_x
                             + "    expectX:" + expectX + "   finalX:" + finalX
-                            + "   leftMenuW:" + leftMenu.getMeasuredWidth()
-                            + "   rightMenuW:" + rightMenu.getMeasuredWidth());
+                            + "   leftMenuW:" + (leftMenu == null ? 0 : leftMenu.getMeasuredWidth())
+                            + "   rightMenuW:" + (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()));
                     scrollTo(finalX, 0);
                     point.x = (int) ev.getX();
                     break;
@@ -308,14 +334,15 @@ public class CustomMenu extends RelativeLayout {
      */
     private void checkLocationInStop() {
         int curScrollX = getScrollX();
-        if (Math.abs(curScrollX) > leftMenu.getMeasuredWidth() >> 1) {
+        int menuWith = curScrollX > 0 ? (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) : (leftMenu == null ? 0 : leftMenu.getMeasuredWidth());
+        if (Math.abs(curScrollX) > menuWith >> 1) {
             if (curScrollX < 0) {
                 mScroller.startScroll(curScrollX, 0,
-                        -leftMenu.getMeasuredWidth() - curScrollX, 0,
+                        -(leftMenu == null ? 0 : leftMenu.getMeasuredWidth()) - curScrollX, 0,
                         200);
             } else {
                 mScroller.startScroll(curScrollX, 0,
-                        leftMenu.getMeasuredWidth() - curScrollX, 0,
+                        (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) - curScrollX, 0,
                         200);
             }
         } else {
@@ -328,7 +355,7 @@ public class CustomMenu extends RelativeLayout {
         if (getChildCount() > 0) {
             velocityX = -velocityX;
             //velocityX > 0，说明试图向右走，显示左菜单
-            mScroller.fling(getScrollX(), getScrollY(), velocityX, velocityY, -rightMenu.getMeasuredWidth(), leftMenu.getMeasuredWidth(), 0,
+            mScroller.fling(getScrollX(), getScrollY(), velocityX, velocityY, -(leftMenu == null ? 0 : leftMenu.getMeasuredWidth()), (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()), 0,
                     0);
 
             final boolean movingDown = velocityY > 0;
