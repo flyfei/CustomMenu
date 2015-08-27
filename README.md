@@ -42,4 +42,4 @@ customMenu.setRightMenu(rightMenu);
 
 ## 发现问题
 
-如果发现问题，请 emailto:zhaotengfei9@gamil.com
+如果发现问题，请 emailto:zhaotengfei9@gmail.com
