@@ -104,18 +104,14 @@ public class CustomMenu extends RelativeLayout {
     private void initView(Context context) {
         this.context = context;
         middleMenu = new FrameLayout(context);
-//        rightMenu = new FrameLayout(context);
         middleMask = new FrameLayout(context);
 
-        middleMenu.setBackgroundResource(R.drawable.main_ui);
-//        rightMenu.setBackgroundResource(R.drawable.right_menu);
         middleMask.setBackgroundColor(0x88000000);
         middleMask.setAlpha(0f);
 
 
         addView(middleMenu);
 //        addView(middleMask);//注释遮罩
-//        addView(rightMenu);
 
 
         mScroller = new Scroller(context, new DecelerateInterpolator());
@@ -129,13 +125,12 @@ public class CustomMenu extends RelativeLayout {
         if (leftMenu != null)
             return;
         leftMenu = new FrameLayout(context);
-        leftMenu.setBackgroundResource(R.drawable.left_menu);
 
         //设置阴影
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             leftMenu.setElevation(120);
         } else {
-            leftMenu.setBackgroundResource(R.drawable.menu_background);
+//            leftMenu.setBackgroundResource(R.drawable.menu_background);
         }
         addView(leftMenu);
     }
@@ -144,7 +139,6 @@ public class CustomMenu extends RelativeLayout {
         if (rightMenu != null)
             return;
         rightMenu = new FrameLayout(context);
-        rightMenu.setBackgroundResource(R.drawable.right_menu);
 
         //设置阴影
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
