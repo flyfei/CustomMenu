@@ -3,11 +3,15 @@ package cn.tovi;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
+import android.support.annotation.LayoutRes;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -58,6 +62,43 @@ public class CustomMenu extends RelativeLayout {
         initView(context);
     }
 
+
+    public void setLeftMenu(@LayoutRes int resid) {
+        setLeftMenu(LayoutInflater.from(getContext()).inflate(resid, null));
+    }
+
+    public void setLeftMenu(View view) {
+        if (view != null) {
+            leftMenu.removeView(view);
+        }
+        leftMenu.setPadding(0,0,0,0);
+        leftMenu.addView(view);
+    }
+
+    public void setContentView(@LayoutRes int resid) {
+        setContentView(LayoutInflater.from(getContext()).inflate(resid, null));
+    }
+
+    public void setContentView(View view) {
+        if (view != null) {
+            middleMenu.removeView(view);
+        }
+        middleMenu.setPadding(0,0,0,0);
+        middleMenu.addView(view,new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT));
+        Log.e("","left:"+middleMenu.getPaddingLeft());
+    }
+
+    public void setRightMenu(@LayoutRes int resid) {
+        setRightMenu(LayoutInflater.from(getContext()).inflate(resid, null));
+    }
+
+    public void setRightMenu(View view) {
+        if (view != null) {
+            rightMenu.removeView(view);
+            rightMenu.addView(view);
+        }
+    }
+
     private void initView(Context context) {
         this.context = context;
         leftMenu = new FrameLayout(context);
@@ -81,7 +122,7 @@ public class CustomMenu extends RelativeLayout {
 
         addView(leftMenu);
         addView(middleMenu);
-        addView(middleMask);//注释遮罩
+//        addView(middleMask);//注释遮罩
         addView(rightMenu);
 
 
