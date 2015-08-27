@@ -3,19 +3,19 @@
 
 * 仅使用左menu
 
-  ![](https://github.com/flyfei/CustomMenu/blob/resources/only_left_menu.gif)
+  ![](https://github.com/flyfei/CustomMenu/blob/master/resources/only_left_menu.gif)
 
 * 仅使用右menu
 
-  ![](https://github.com/flyfei/CustomMenu/blob/resources/only_right_menu.gif)
+  ![](https://github.com/flyfei/CustomMenu/blob/master/resources/only_right_menu.gif)
 
 * 使用左右menu
 
-  ![](https://github.com/flyfei/CustomMenu/blob/resources/double_menu.gif)
+  ![](https://github.com/flyfei/CustomMenu/blob/master/resources/double_menu.gif)
 
 * 不使用menu
 
-  ![](https://github.com/flyfei/CustomMenu/blob/resources/no_menu.gif)
+  ![](https://github.com/flyfei/CustomMenu/blob/master/resources/no_menu.gif)
 
 
 ## 使用说明
