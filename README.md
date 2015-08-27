@@ -1,45 +1,52 @@
-# CustomMenu
+CustomMenu is a custom control that can help you quickly create Menu
+
+Features：
+
+* Only the left menu
+* Only the right menu
+* Together with the right and left menu
+* About menus do not, CustomMenu equivalent of a layout
+
+## Legend
 
 
-* 仅使用左menu
+* Only the left menu
 
   ![](https://github.com/flyfei/CustomMenu/blob/master/resources/only_left_menu.gif)
 
-* 仅使用右menu
+* Only the right menu
 
-  ![](https://github.com/flyfei/CustomMenu/blob/master/resources/only_right_menu.gif)
+ ![](https://github.com/flyfei/CustomMenu/blob/master/resources/only_right_menu.gif)
 
-* 使用左右menu
-
+* Together with the right and left menu
+ 
   ![](https://github.com/flyfei/CustomMenu/blob/master/resources/double_menu.gif)
 
-* 不使用menu
+* About menus do not, CustomMenu equivalent of a layout
 
   ![](https://github.com/flyfei/CustomMenu/blob/master/resources/no_menu.gif)
-
-
-## 使用说明
-
+  
+## For Users
 
 ```
 CustomMenu customMenu = new CustomMenu(this);
 
-//设置中间布局
+//Setting Content Layout
 ImageView contentView = new ImageView(this);
 contentView.setBackgroundResource(R.drawable.main_view);
 customMenu.setContentView(contentView);
 
-//设置左菜单
+//Setting the left menu
 ImageView leftMenu = new ImageView(this);
 leftMenu.setBackgroundResource(R.drawable.left_view);
 customMenu.setLeftMenu(leftMenu);
 
-//设置右菜单
+//Setting the right menu
 ImageView rightMenu = new ImageView(this);
 rightMenu.setBackgroundResource(R.drawable.left_view);
 customMenu.setRightMenu(rightMenu);
 ```
 
-## 发现问题
+## Feedback
 
-如果发现问题，请 emailto:zhaotengfei9@gmail.com
+If you have any questions,please emailto:zhaotengfei9@gmail.com
