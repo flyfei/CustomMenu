@@ -7,6 +7,10 @@ Features：
 * Together with the right and left menu
 * About menus do not, CustomMenu equivalent of a layout
 
+
+[中文](https://github.com/flyfei/CustomMenu/blob/master/README_CN.md)
+
+
 ## Legend
 
 
