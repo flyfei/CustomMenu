@@ -5,22 +5,19 @@
 ![CustomMenu Gif](https://github.com/flyfei/CustomMenu/blob/master/resources/custom_menu.gif)
 
 
-SDK为21时，添加阴影效果
-
-![CustomMenu Gif](https://github.com/flyfei/CustomMenu/blob/develop/resources/custom_menu2.gif)
-
-
 * 仅使用左menu
 
+  ![](https://github.com/flyfei/CustomMenu/blob/develop/resources/only_left_menu.gif)
 
 * 仅使用右menu
-
+  ![](https://github.com/flyfei/CustomMenu/blob/develop/resources/only_right_menu.gif)
 
 * 使用左右menu
 
+  ![](https://github.com/flyfei/CustomMenu/blob/develop/resources/double_menu.gif)
 
 * 不使用menu
-
+  ![](https://github.com/flyfei/CustomMenu/blob/develop/resources/no_menu.gif)
 
 
 ## 使用说明
