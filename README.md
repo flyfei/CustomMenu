@@ -1,3 +1,5 @@
+[![Android Gems](http://www.android-gems.com/badge/flyfei/CustomMenu.svg?branch=master)](http://www.android-gems.com/lib/flyfei/CustomMenu)
+
 CustomMenu is a custom control that can help you quickly create Menu
 
 Features：
