@@ -92,6 +92,39 @@ public class CustomMenu extends RelativeLayout {
         setRightMenu(LayoutInflater.from(getContext()).inflate(resid, null));
     }
 
+    public void openLeftMenuIfPossible() {
+        if (leftMenu != null) {
+            // If the view is rolling, stop
+            if (mScroller.computeScrollOffset()) {
+                mScroller.forceFinished(true);
+            }
+            if (getScrollX() != -leftMenu.getMeasuredWidth())
+                mScroller.startScroll(getScrollX(), 0, -leftMenu.getMeasuredWidth() - getScrollX(), 0);
+//                scrollTo(-leftMenu.getMeasuredWidth() - getScrollX(), 0);
+        }
+    }
+
+    public void openRightMenuIfPossible() {
+        if (rightMenu != null) {
+            // If the view is rolling, stop
+            if (mScroller.computeScrollOffset()) {
+                mScroller.forceFinished(true);
+            }
+            if (getScrollX() != rightMenu.getMeasuredWidth())
+                mScroller.startScroll(getScrollX(), 0, rightMenu.getMeasuredWidth() - getScrollX(), 0);
+//                scrollTo(rightMenu.getMeasuredWidth() - getScrollX(), 0);
+        }
+    }
+
+    public void closeMenu() {
+        // If the view is rolling, stop
+        if (mScroller.computeScrollOffset()) {
+            mScroller.forceFinished(true);
+        }
+        if (getScrollX() != 0)
+            scrollTo(rightMenu.getMeasuredWidth() - getScrollX(), 0);
+    }
+
     public void setRightMenu(View view) {
         initRightMenu();
         if (view != null) {

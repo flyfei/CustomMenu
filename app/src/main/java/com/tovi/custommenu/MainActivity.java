@@ -2,6 +2,7 @@ package com.tovi.custommenu;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -9,7 +10,7 @@ import android.widget.ImageView;
 import cn.tovi.CustomMenu;
 
 public class MainActivity extends Activity {
-
+    CustomMenu customMenu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,11 +23,17 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
 
-        CustomMenu customMenu = new CustomMenu(this);
+        customMenu = new CustomMenu(this);
 
         //设置中间布局
         ImageView contentView = new ImageView(this);
         contentView.setBackgroundResource(R.drawable.main_view);
+        contentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customMenu.openLeftMenuIfPossible();
+            }
+        });
         customMenu.setContentView(contentView);
 
         //设置左菜单
