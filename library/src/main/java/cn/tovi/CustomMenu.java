@@ -115,7 +115,6 @@ public class CustomMenu extends RelativeLayout {
             stopAllScroll();
             if (getScrollX() != -leftMenu.getMeasuredWidth())
                 mScrollerSlowDownAfter.startScroll(getScrollX(), 0, -leftMenu.getMeasuredWidth() - getScrollX(), 0);
-//                scrollTo(-leftMenu.getMeasuredWidth() - getScrollX(), 0);
         }
     }
 
@@ -125,7 +124,6 @@ public class CustomMenu extends RelativeLayout {
             stopAllScroll();
             if (getScrollX() != rightMenu.getMeasuredWidth())
                 mScrollerSlowDownAfter.startScroll(getScrollX(), 0, rightMenu.getMeasuredWidth() - getScrollX(), 0);
-//                scrollTo(rightMenu.getMeasuredWidth() - getScrollX(), 0);
         }
     }
 
@@ -134,7 +132,6 @@ public class CustomMenu extends RelativeLayout {
         stopAllScroll();
         if (getScrollX() != 0)
             mScrollerSlowDownAfter.startScroll(getScrollX(), 0, -getScrollX(), 0);
-//            scrollTo(rightMenu.getMeasuredWidth() - getScrollX(), 0);
     }
 
     public void setRightMenu(View view) {
