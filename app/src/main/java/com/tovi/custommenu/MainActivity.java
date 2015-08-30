@@ -34,23 +34,6 @@ public class MainActivity extends Activity{
         //设置中间布局
         ImageView contentView = new ImageView(this);
         contentView.setBackgroundResource(R.drawable.main_view);
-        contentView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (event.getY() < 300) {
-
-                        if (event.getX() <= v.getMeasuredWidth() / 2) {
-                            leftMenu();
-                        }else{
-                            rightMenu();
-                        }
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
         customMenu.setContentView(R.layout.activity_main);
 
 
