@@ -2,13 +2,20 @@ package com.tovi.custommenu;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
 import cn.tovi.CustomMenu;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity{
+
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    CustomMenu customMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,12 +29,13 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
 
-        CustomMenu customMenu = new CustomMenu(this);
+        customMenu = new CustomMenu(this);
 
         //设置中间布局
         ImageView contentView = new ImageView(this);
         contentView.setBackgroundResource(R.drawable.main_view);
-        customMenu.setContentView(contentView);
+        customMenu.setContentView(R.layout.activity_main);
+
 
         //设置左菜单
         ImageView leftMenu = new ImageView(this);
@@ -40,5 +48,35 @@ public class MainActivity extends Activity {
         customMenu.setRightMenu(rightMenu);
 
         setContentView(customMenu);
+    }
+
+    private void leftMenu() {
+        if (customMenu.getState() == CustomMenu.State.CLOSE_MENU) {
+            customMenu.openLeftMenuIfPossible();
+        } else if (customMenu.getState() == CustomMenu.State.LEFT_MENU_OPENS) {
+            customMenu.closeMenu();
+        } else {
+            Log.e(TAG, "CustomMenu State:" + customMenu.getState());
+        }
+    }
+
+    private void rightMenu() {
+        if (customMenu.getState() == CustomMenu.State.CLOSE_MENU) {
+            customMenu.openRightMenuIfPossible();
+        } else if (customMenu.getState() == CustomMenu.State.RIGHT_MENU_OPENS) {
+            customMenu.closeMenu();
+        } else {
+            Log.e(TAG, "CustomMenu State:" + customMenu.getState());
+        }
+    }
+    public void onClick(View view){
+        switch (view.getId()){
+            case R.id.left_menu:
+                leftMenu();
+                break;
+            case R.id.right_menu:
+                rightMenu();
+                break;
+        }
     }
 }
