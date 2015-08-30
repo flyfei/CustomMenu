@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -22,34 +23,46 @@ public class CustomMenu extends RelativeLayout {
 
     private Context context;
     /**
-     * 左侧Menu
+     * To the left menu
      */
     private FrameLayout leftMenu;
     /**
-     * 中间Menu
+     * Middle view
      */
-    private FrameLayout middleMenu;
+    private FrameLayout middleView;
     /**
-     * 右侧Menu
+     * To the right menu
      */
     private FrameLayout rightMenu;
     /**
-     * 中部遮罩
+     * middle Mask
      */
     private FrameLayout middleMask;
     /**
-     * 滚动器
+     * Scroller, more slowly
      */
-    private Scroller mScroller;
+    private Scroller mScrollerMoreSlowly;
+    /**
+     * Scroller, slow down after
+     */
+    private Scroller mScrollerSlowDownAfter;
 
 
     private int mTouchSlop;
     private int mMinimumVelocity;
     private int mMaximumVelocity;
     /**
-     * 速度管理器
+     * Velocity Tracker
      */
     private VelocityTracker mVelocityTracker;
+
+    private State state;
+
+    /**
+     * Whether the finger touch
+     */
+    private boolean fingerTouch;
+
 
     public CustomMenu(Context context) {
         super(context);
@@ -81,25 +94,27 @@ public class CustomMenu extends RelativeLayout {
 
     public void setContentView(View view) {
         if (view != null) {
-            middleMenu.removeView(view);
+            middleView.removeView(view);
         }
-        middleMenu.setPadding(0, 0, 0, 0);
-        middleMenu.addView(view, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        Log.e("", "left:" + middleMenu.getPaddingLeft());
+        middleView.setPadding(0, 0, 0, 0);
+        middleView.addView(view, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        Log.e("", "left:" + middleView.getPaddingLeft());
     }
 
     public void setRightMenu(@LayoutRes int resid) {
         setRightMenu(LayoutInflater.from(getContext()).inflate(resid, null));
     }
 
+    public State getState() {
+        return this.state;
+    }
+
     public void openLeftMenuIfPossible() {
         if (leftMenu != null) {
             // If the view is rolling, stop
-            if (mScroller.computeScrollOffset()) {
-                mScroller.forceFinished(true);
-            }
+            stopAllScroll();
             if (getScrollX() != -leftMenu.getMeasuredWidth())
-                mScroller.startScroll(getScrollX(), 0, -leftMenu.getMeasuredWidth() - getScrollX(), 0);
+                mScrollerSlowDownAfter.startScroll(getScrollX(), 0, -leftMenu.getMeasuredWidth() - getScrollX(), 0);
 //                scrollTo(-leftMenu.getMeasuredWidth() - getScrollX(), 0);
         }
     }
@@ -107,22 +122,19 @@ public class CustomMenu extends RelativeLayout {
     public void openRightMenuIfPossible() {
         if (rightMenu != null) {
             // If the view is rolling, stop
-            if (mScroller.computeScrollOffset()) {
-                mScroller.forceFinished(true);
-            }
+            stopAllScroll();
             if (getScrollX() != rightMenu.getMeasuredWidth())
-                mScroller.startScroll(getScrollX(), 0, rightMenu.getMeasuredWidth() - getScrollX(), 0);
+                mScrollerSlowDownAfter.startScroll(getScrollX(), 0, rightMenu.getMeasuredWidth() - getScrollX(), 0);
 //                scrollTo(rightMenu.getMeasuredWidth() - getScrollX(), 0);
         }
     }
 
     public void closeMenu() {
         // If the view is rolling, stop
-        if (mScroller.computeScrollOffset()) {
-            mScroller.forceFinished(true);
-        }
+        stopAllScroll();
         if (getScrollX() != 0)
-            scrollTo(rightMenu.getMeasuredWidth() - getScrollX(), 0);
+            mScrollerSlowDownAfter.startScroll(getScrollX(), 0, -getScrollX(), 0);
+//            scrollTo(rightMenu.getMeasuredWidth() - getScrollX(), 0);
     }
 
     public void setRightMenu(View view) {
@@ -136,22 +148,26 @@ public class CustomMenu extends RelativeLayout {
 
     private void initView(Context context) {
         this.context = context;
-        middleMenu = new FrameLayout(context);
+        middleView = new FrameLayout(context);
         middleMask = new FrameLayout(context);
 
         middleMask.setBackgroundColor(0x88000000);
         middleMask.setAlpha(0f);
 
 
-        addView(middleMenu);
-//        addView(middleMask);//注释遮罩
+        addView(middleView);
+//        addView(middleMask);//note mask
 
 
-        mScroller = new Scroller(context, new DecelerateInterpolator());
+        mScrollerMoreSlowly = new Scroller(context, new DecelerateInterpolator());
+        mScrollerSlowDownAfter = new Scroller(context, new AccelerateDecelerateInterpolator());
         final ViewConfiguration configuration = ViewConfiguration.get(context);
         mTouchSlop = configuration.getScaledTouchSlop();
         mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
         mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
+
+        state = State.CLOSE_MENU;
+
     }
 
     private void initLeftMenu() {
@@ -182,6 +198,15 @@ public class CustomMenu extends RelativeLayout {
         addView(rightMenu);
     }
 
+    private void stopAllScroll() {
+        if (mScrollerMoreSlowly.computeScrollOffset()) {
+            mScrollerMoreSlowly.forceFinished(true);
+        }
+        if (mScrollerSlowDownAfter.computeScrollOffset()) {
+            mScrollerSlowDownAfter.forceFinished(true);
+        }
+    }
+
     @Override
     public void scrollTo(int x, int y) {
         super.scrollTo(x, y);
@@ -196,7 +221,7 @@ public class CustomMenu extends RelativeLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        middleMenu.measure(widthMeasureSpec, heightMeasureSpec);
+        middleView.measure(widthMeasureSpec, heightMeasureSpec);
         middleMask.measure(widthMeasureSpec, heightMeasureSpec);
         int realWidth = MeasureSpec.getSize(widthMeasureSpec);
         //宽度是middleMenu宽度的八成;MeasureSpec.EXACTLY:精确
@@ -211,16 +236,16 @@ public class CustomMenu extends RelativeLayout {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        middleMenu.layout(l, t, r, b);
+        middleView.layout(l, t, r, b);
         middleMask.layout(l, t, r, b);
         if (leftMenu != null)
             leftMenu.layout(l - leftMenu.getMeasuredWidth(), t,
-                    r - middleMenu.getMeasuredWidth(), b);
+                    r - middleView.getMeasuredWidth(), b);
         if (rightMenu != null)
             rightMenu.layout(
-                    l + middleMenu.getMeasuredWidth(),
+                    l + middleView.getMeasuredWidth(),
                     t,
-                    l + middleMenu.getMeasuredWidth()
+                    l + middleView.getMeasuredWidth()
                             + rightMenu.getMeasuredWidth(), b);
     }
 
@@ -266,6 +291,7 @@ public class CustomMenu extends RelativeLayout {
 
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
+                    fingerTouch = false;
                     touchUp();
                     isLeftrightEvent = false;
                     isTestCompete = false;
@@ -274,6 +300,7 @@ public class CustomMenu extends RelativeLayout {
         } else {
             switch (ev.getActionMasked()) {
                 case MotionEvent.ACTION_UP:
+                    fingerTouch = false;
                     touchUp();
                     isLeftrightEvent = false;
                     isTestCompete = false;
@@ -289,13 +316,31 @@ public class CustomMenu extends RelativeLayout {
 
     @Override
     public void computeScroll() {
-        if (mScroller.computeScrollOffset()) {//调用此方法，想要获取最新的当前位置。返回true:滑动没有停止;返回false：滑动停止
-            int tempX = mScroller.getCurrX();
+        if (mScrollerMoreSlowly.computeScrollOffset()) {//调用此方法，想要获取最新的当前位置。返回true:滑动没有停止;返回false：滑动停止
+            int tempX = mScrollerMoreSlowly.getCurrX();
             scrollTo(tempX, 0);
             postInvalidate();
 
-            if (mScroller.isFinished())//如果滚动停止，检测位置
+            if (mScrollerMoreSlowly.isFinished()) {//如果滚动停止，检测位置
                 checkLocationInStop();
+            } else {
+                if (state != State.SCROLLING)
+                    state = State.SCROLLING;
+            }
+        } else if (mScrollerSlowDownAfter.computeScrollOffset()) {//调用此方法，想要获取最新的当前位置。返回true:滑动没有停止;返回false：滑动停止
+            int tempX = mScrollerSlowDownAfter.getCurrX();
+            scrollTo(tempX, 0);
+            postInvalidate();
+
+            if (mScrollerSlowDownAfter.isFinished()) {//如果滚动停止，检测位置
+                checkLocationInStop();
+            } else {
+                if (state != State.SCROLLING)
+                    state = State.SCROLLING;
+            }
+        } else {
+            //Stop scrolling view,Check location
+            checkLocationInStop();
         }
     }
 
@@ -305,9 +350,9 @@ public class CustomMenu extends RelativeLayout {
     private void getEventType(MotionEvent ev) {
         switch (ev.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                if (mScroller.computeScrollOffset()) {
-                    mScroller.forceFinished(true);
-                }
+                fingerTouch = true;
+                // stop all scroll
+                stopAllScroll();
                 point.x = (int) ev.getX();
                 point.y = (int) ev.getY();
                 super.dispatchTouchEvent(ev);
@@ -330,6 +375,7 @@ public class CustomMenu extends RelativeLayout {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
+                fingerTouch = false;
                 super.dispatchTouchEvent(ev);
                 touchUp();
                 isLeftrightEvent = false;
@@ -360,20 +406,39 @@ public class CustomMenu extends RelativeLayout {
      * 滑动/滚动停止的时候检查位置
      */
     private void checkLocationInStop() {
+        //如果手指触屏(当前是按下或滑动状态),不做处理
+        if (fingerTouch) {
+            return;
+        }
         int curScrollX = getScrollX();
         int menuWith = curScrollX > 0 ? (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) : (leftMenu == null ? 0 : leftMenu.getMeasuredWidth());
         if (Math.abs(curScrollX) > menuWith >> 1) {
             if (curScrollX < 0) {
-                mScroller.startScroll(curScrollX, 0,
-                        -(leftMenu == null ? 0 : leftMenu.getMeasuredWidth()) - curScrollX, 0,
-                        200);
+                if (curScrollX != -leftMenu.getMeasuredWidth()) {
+                    mScrollerMoreSlowly.startScroll(curScrollX, 0,
+                            -(leftMenu == null ? 0 : leftMenu.getMeasuredWidth()) - curScrollX, 0,
+                            200);
+                } else {
+                    //完全显示左菜单
+                    state = State.LEFT_MENU_OPENS;
+                }
             } else {
-                mScroller.startScroll(curScrollX, 0,
-                        (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) - curScrollX, 0,
-                        200);
+                if (curScrollX != rightMenu.getMeasuredWidth()) {
+                    mScrollerMoreSlowly.startScroll(curScrollX, 0,
+                            (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) - curScrollX, 0,
+                            200);
+                } else {
+                    // 完全显示右菜单
+                    state = State.RIGHT_MENU_OPENS;
+                }
             }
         } else {
-            mScroller.startScroll(curScrollX, 0, -curScrollX, 0, 200);
+            if (curScrollX != 0) {
+                mScrollerMoreSlowly.startScroll(curScrollX, 0, -curScrollX, 0, 200);
+            } else {
+                // 完全关闭菜单
+                state = State.CLOSE_MENU;
+            }
         }
         invalidate();
     }
@@ -382,11 +447,11 @@ public class CustomMenu extends RelativeLayout {
         if (getChildCount() > 0) {
             velocityX = -velocityX;
             //velocityX > 0，说明试图向右走，显示左菜单
-            mScroller.fling(getScrollX(), getScrollY(), velocityX, velocityY, -(leftMenu == null ? 0 : leftMenu.getMeasuredWidth()), (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()), 0,
+            mScrollerMoreSlowly.fling(getScrollX(), getScrollY(), velocityX, velocityY, -(leftMenu == null ? 0 : leftMenu.getMeasuredWidth()), (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()), 0,
                     0);
 
             final boolean movingDown = velocityY > 0;
-            awakenScrollBars(mScroller.getDuration());
+            awakenScrollBars(mScrollerMoreSlowly.getDuration());
             invalidate();
         }
     }
@@ -404,5 +469,24 @@ public class CustomMenu extends RelativeLayout {
             mVelocityTracker.recycle();
             mVelocityTracker = null;
         }
+    }
+
+    public enum State {
+        /**
+         * View is scrolling
+         */
+        SCROLLING,
+        /**
+         * Left menu opens
+         */
+        LEFT_MENU_OPENS,
+        /**
+         * Right menu opens
+         */
+        RIGHT_MENU_OPENS,
+        /**
+         * Stop scrolling view,Left and Right menu menu is closed
+         */
+        CLOSE_MENU,
     }
 }
