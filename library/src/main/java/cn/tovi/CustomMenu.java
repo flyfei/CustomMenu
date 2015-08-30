@@ -1,11 +1,13 @@
 package cn.tovi;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.support.annotation.LayoutRes;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -14,6 +16,7 @@ import android.view.ViewConfiguration;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
@@ -37,7 +40,7 @@ public class CustomMenu extends RelativeLayout {
     /**
      * middle Mask
      */
-    private FrameLayout middleMask;
+//    private FrameLayout middleMask;
     /**
      * Scroller, more slowly
      */
@@ -64,6 +67,9 @@ public class CustomMenu extends RelativeLayout {
      */
     private boolean isLeftrightEvent;
     private Point point = new Point();
+
+    private ImageView leftMask;
+    private ImageView rightMask;
 
     public CustomMenu(Context context) {
         super(context);
@@ -96,9 +102,31 @@ public class CustomMenu extends RelativeLayout {
         if (view != null) {
             middleView.removeView(view);
         }
+
         middleView.setPadding(0, 0, 0, 0);
         middleView.addView(view, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         Log.e("", "left:" + middleView.getPaddingLeft());
+
+        //设置阴影
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            if (leftMask != null)
+                middleView.removeView(leftMask);
+            else {
+                leftMask = new ImageView(context);
+                leftMask.setBackgroundResource(R.drawable.middle_left);
+            }
+            if (rightMask != null)
+                middleView.removeView(rightMask);
+            else {
+                rightMask = new ImageView(context);
+                rightMask.setBackgroundResource(R.drawable.middle_right);
+            }
+            FrameLayout.LayoutParams f = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT);
+            f.gravity = Gravity.RIGHT;
+            middleView.addView(leftMask, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT));
+            middleView.addView(rightMask, f);
+        }
+
     }
 
     public void setRightMenu(@LayoutRes int resid) {
@@ -146,10 +174,11 @@ public class CustomMenu extends RelativeLayout {
     private void initView(Context context) {
         this.context = context;
         middleView = new FrameLayout(context);
-        middleMask = new FrameLayout(context);
+        middleView.setBackgroundColor(Color.TRANSPARENT);
+//        middleMask = new FrameLayout(context);
 
-        middleMask.setBackgroundColor(0x88000000);
-        middleMask.setAlpha(0f);
+//        middleMask.setBackgroundColor(0x88000000);
+//        middleMask.setAlpha(0f);
 
 
         addView(middleView);
@@ -175,9 +204,8 @@ public class CustomMenu extends RelativeLayout {
         //设置阴影
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             leftMenu.setElevation(120);
-        } else {
-//            leftMenu.setBackgroundResource(R.drawable.menu_background);
         }
+        leftMenu.setBackgroundColor(Color.TRANSPARENT);
         addView(leftMenu);
     }
 
@@ -189,9 +217,8 @@ public class CustomMenu extends RelativeLayout {
         //设置阴影
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             rightMenu.setElevation(120);
-        } else {
-//            leftMenu.setBackgroundResource(R.drawable.menu_background);
         }
+        rightMenu.setBackgroundColor(Color.TRANSPARENT);
         addView(rightMenu);
     }
 
@@ -210,16 +237,16 @@ public class CustomMenu extends RelativeLayout {
 
 
         //设置遮罩的透明度(这里以 “当前视图的偏移量/菜单的宽度” 的值作为透明度)
-        int curX = Math.abs(getScrollX());
-        float scale = curX / (curX > 0 ? (float) (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) : (float) (leftMenu == null ? 0 : leftMenu.getMeasuredWidth()));
-        middleMask.setAlpha(scale * 0.8f);
+//        int curX = Math.abs(getScrollX());
+//        float scale = curX / (curX > 0 ? (float) (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) : (float) (leftMenu == null ? 0 : leftMenu.getMeasuredWidth()));
+//        middleMask.setAlpha(scale * 0.8f);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         middleView.measure(widthMeasureSpec, heightMeasureSpec);
-        middleMask.measure(widthMeasureSpec, heightMeasureSpec);
+//        middleMask.measure(widthMeasureSpec, heightMeasureSpec);
         int realWidth = MeasureSpec.getSize(widthMeasureSpec);
         //宽度是middleMenu宽度的八成;MeasureSpec.EXACTLY:精确
         int tempWidthMeasure = MeasureSpec.makeMeasureSpec(
@@ -234,7 +261,7 @@ public class CustomMenu extends RelativeLayout {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         middleView.layout(l, t, r, b);
-        middleMask.layout(l, t, r, b);
+//        middleMask.layout(l, t, r, b);
         if (leftMenu != null)
             leftMenu.layout(l - leftMenu.getMeasuredWidth(), t,
                     r - middleView.getMeasuredWidth(), b);
@@ -254,6 +281,7 @@ public class CustomMenu extends RelativeLayout {
             return true;
         }
         if (isLeftrightEvent) {
+            //getAction() & ACTION_MASK
             switch (ev.getActionMasked()) {
                 case MotionEvent.ACTION_MOVE:
                     int curScrollX = getScrollX();// 当前整体视图的位置(矢量。+表示视图发生了左移;-表示视图发生了右移。
