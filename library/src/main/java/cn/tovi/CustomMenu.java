@@ -20,7 +20,7 @@ import android.widget.Scroller;
 public class CustomMenu extends RelativeLayout {
 
     private static final String TAG = CustomMenu.class.getSimpleName();
-
+    private static final int TEST_DIS = 20;
     private Context context;
     /**
      * To the left menu
@@ -46,8 +46,6 @@ public class CustomMenu extends RelativeLayout {
      * Scroller, slow down after
      */
     private Scroller mScrollerSlowDownAfter;
-
-
     private int mTouchSlop;
     private int mMinimumVelocity;
     private int mMaximumVelocity;
@@ -55,14 +53,17 @@ public class CustomMenu extends RelativeLayout {
      * Velocity Tracker
      */
     private VelocityTracker mVelocityTracker;
-
     private State state;
-
     /**
      * Whether the finger touch(In touch event, you must first set)
      */
     private boolean fingerTouch;
-
+    private boolean isTestCompete;
+    /**
+     * Is not sliding around event
+     */
+    private boolean isLeftrightEvent;
+    private Point point = new Point();
 
     public CustomMenu(Context context) {
         super(context);
@@ -73,7 +74,6 @@ public class CustomMenu extends RelativeLayout {
         super(context, attrs);
         initView(context);
     }
-
 
     public void setLeftMenu(@LayoutRes int resid) {
         setLeftMenu(LayoutInflater.from(getContext()).inflate(resid, null));
@@ -246,9 +246,6 @@ public class CustomMenu extends RelativeLayout {
                             + rightMenu.getMeasuredWidth(), b);
     }
 
-    private boolean isTestCompete;
-    private boolean isLeftrightEvent;
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         obtainVelocityTracker(ev);
@@ -340,9 +337,6 @@ public class CustomMenu extends RelativeLayout {
             checkLocationInStop();
         }
     }
-
-    private Point point = new Point();
-    private static final int TEST_DIS = 20;
 
     private void getEventType(MotionEvent ev) {
         switch (ev.getActionMasked()) {
@@ -443,11 +437,11 @@ public class CustomMenu extends RelativeLayout {
     public void fling(int velocityX, int velocityY) {
         if (getChildCount() > 0) {
             velocityX = -velocityX;
-            //velocityX > 0，说明试图向右走，显示左菜单
+            //velocityX > 0，说明视图向右走，显示左菜单
             mScrollerMoreSlowly.fling(getScrollX(), getScrollY(), velocityX, velocityY, -(leftMenu == null ? 0 : leftMenu.getMeasuredWidth()), (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()), 0,
                     0);
 
-            final boolean movingDown = velocityY > 0;
+//            final boolean movingDown = velocityY > 0;
             awakenScrollBars(mScrollerMoreSlowly.getDuration());
             invalidate();
         }
