@@ -69,14 +69,4 @@ public class MainActivity extends Activity{
             Log.e(TAG, "CustomMenu State:" + customMenu.getState());
         }
     }
-    public void onClick(View view){
-        switch (view.getId()){
-            case R.id.left_menu:
-                leftMenu();
-                break;
-            case R.id.right_menu:
-                rightMenu();
-                break;
-        }
-    }
 }
