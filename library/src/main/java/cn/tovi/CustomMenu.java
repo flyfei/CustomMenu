@@ -59,7 +59,7 @@ public class CustomMenu extends RelativeLayout {
     private State state;
 
     /**
-     * Whether the finger touch
+     * Whether the finger touch(In touch event, you must first set)
      */
     private boolean fingerTouch;
 
