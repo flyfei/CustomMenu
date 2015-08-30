@@ -5,22 +5,4 @@
     android:background="@drawable/main_view"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/left_menu"
-        android:layout_width="76dp"
-        android:layout_height="94dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/btn_left"
-        android:onClick="onClick" />
-
-    <Button
-        android:id="@+id/right_menu"
-        android:layout_width="78dp"
-        android:layout_height="97dp"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/btn_right"
-        android:onClick="onClick" />
-
 </RelativeLayout>
