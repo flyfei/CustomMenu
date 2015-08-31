@@ -48,6 +48,13 @@ rightMenu.setBackgroundResource(R.drawable.left_view);
 customMenu.setRightMenu(rightMenu);
 ```
 
+
+## Latest Version
+
+
+[Download](https://github.com/flyfei/CustomMenu/archive/V0.0.2.zip)
+
+
 ## 反馈
 
 如果发现问题，请 emailto:zhaotengfei9@gmail.com
