@@ -73,7 +73,7 @@ setLeftShadow(Drawable shadowLeft);
 ## Latest Version
 
 
-[Download](https://github.com/flyfei/CustomMenu/archive/V0.0.2.zip)
+[Download](https://github.com/flyfei/CustomMenu/wiki)
 
 
 ## 反馈
