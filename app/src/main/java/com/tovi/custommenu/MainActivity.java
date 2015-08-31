@@ -10,6 +10,13 @@ import android.widget.ImageView;
 
 import cn.tovi.CustomMenu;
 
+/**
+ * @author zhaotengfei9@gmail.com
+ */
+
+/**
+ * The following code is only for understanding the Custom interface
+ */
 public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -35,8 +42,8 @@ public class MainActivity extends Activity {
 //        contentView.setBackgroundResource(R.drawable.main_view);
         customMenu.setContentView(R.layout.activity_main);
 
-        customMenu.setRightShadow(R.drawable.middle_right);
-        customMenu.setLeftShadow(R.drawable.middle_left);
+        customMenu.setRightShadow(R.drawable.shadow_right);
+        customMenu.setLeftShadow(R.drawable.shadow_left);
         //Setting the left menu
         ImageView leftMenu = new ImageView(this);
         leftMenu.setBackgroundResource(R.drawable.left_view);

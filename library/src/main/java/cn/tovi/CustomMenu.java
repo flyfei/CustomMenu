@@ -19,6 +19,9 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
+/**
+ * @author zhaotengfei9@gmail.com
+ */
 public class CustomMenu extends RelativeLayout {
 
     private static final String TAG = CustomMenu.class.getSimpleName();
