@@ -68,7 +68,7 @@ setLeftShadow(int resId);
 setLeftShadow(Drawable shadowLeft);
 ```
 
-* [阴影图片资源]()
+* [阴影图片资源](https://github.com/flyfei/CustomMenu/tree/master/resources/shadowImg)
 
 ## Latest Version
 

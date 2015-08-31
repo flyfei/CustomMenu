@@ -73,7 +73,7 @@ setLeftShadow(int resId);
 setLeftShadow(Drawable shadowLeft);
 ```
 
-* [Shadow picture resources]()
+* [Shadow picture resources](https://github.com/flyfei/CustomMenu/tree/master/resources/shadowImg)
 
 ## Latest Version
 
