@@ -46,8 +46,29 @@ customMenu.setLeftMenu(leftMenu);
 ImageView rightMenu = new ImageView(this);
 rightMenu.setBackgroundResource(R.drawable.left_view);
 customMenu.setRightMenu(rightMenu);
+
+//打开左菜单
+customMenu.openLeftMenuIfPossible();
+
+//打开右菜单
+customMenu.openRightMenuIfPossible();
+
+//关闭菜单
+customMenu.closeMenu();
+
+//获取状态
+customMenu.getState()
+
+//设置右侧阴影
+setRightShadow(int resId);
+setRightShadow(Drawable shadowRight);
+
+//设置左侧阴影
+setLeftShadow(int resId);
+setLeftShadow(Drawable shadowLeft);
 ```
 
+* [阴影图片资源]()
 
 ## Latest Version
 

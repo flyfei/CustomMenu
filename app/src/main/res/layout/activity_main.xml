@@ -5,4 +5,23 @@
     android:background="@drawable/main_view"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/btn_left_menu"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:onClick="onClick" />
+
+    <ImageView
+        android:id="@+id/btn_right_menu"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:onClick="onClick" />
 </RelativeLayout>

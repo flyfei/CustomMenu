@@ -3,7 +3,6 @@ package com.tovi.custommenu;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -11,7 +10,7 @@ import android.widget.ImageView;
 
 import cn.tovi.CustomMenu;
 
-public class MainActivity extends Activity{
+public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -31,18 +30,19 @@ public class MainActivity extends Activity{
 
         customMenu = new CustomMenu(this);
 
-        //设置中间布局
-        ImageView contentView = new ImageView(this);
-        contentView.setBackgroundResource(R.drawable.main_view);
+        //Setting Content Layout
+//        ImageView contentView = new ImageView(this);
+//        contentView.setBackgroundResource(R.drawable.main_view);
         customMenu.setContentView(R.layout.activity_main);
 
-
-        //设置左菜单
+        customMenu.setRightShadow(R.drawable.middle_right);
+        customMenu.setLeftShadow(R.drawable.middle_left);
+        //Setting the left menu
         ImageView leftMenu = new ImageView(this);
         leftMenu.setBackgroundResource(R.drawable.left_view);
         customMenu.setLeftMenu(leftMenu);
 
-        //设置右菜单
+        //Setting the right menu
         ImageView rightMenu = new ImageView(this);
         rightMenu.setBackgroundResource(R.drawable.left_view);
         customMenu.setRightMenu(rightMenu);
@@ -67,6 +67,17 @@ public class MainActivity extends Activity{
             customMenu.closeMenu();
         } else {
             Log.e(TAG, "CustomMenu State:" + customMenu.getState());
+        }
+    }
+
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_left_menu:
+                leftMenu();
+                break;
+            case R.id.btn_right_menu:
+                rightMenu();
+                break;
         }
     }
 }

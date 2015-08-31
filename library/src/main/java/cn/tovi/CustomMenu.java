@@ -1,13 +1,13 @@
 package cn.tovi;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.Canvas;
 import android.graphics.Point;
-import android.os.Build;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -16,7 +16,6 @@ import android.view.ViewConfiguration;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
@@ -68,8 +67,11 @@ public class CustomMenu extends RelativeLayout {
     private boolean isLeftrightEvent;
     private Point point = new Point();
 
-    private ImageView leftMask;
-    private ImageView rightMask;
+//    private ImageView leftMask;
+//    private ImageView rightMask;
+
+    private Drawable mShadowLeft;
+    private Drawable mShadowRight;
 
     public CustomMenu(Context context) {
         super(context);
@@ -81,8 +83,42 @@ public class CustomMenu extends RelativeLayout {
         initView(context);
     }
 
-    public void setLeftMenu(@LayoutRes int resid) {
-        setLeftMenu(LayoutInflater.from(getContext()).inflate(resid, null));
+    public void setContentView(@LayoutRes int resId) {
+        setContentView(LayoutInflater.from(getContext()).inflate(resId, null));
+    }
+
+    public void setContentView(View view) {
+        if (view != null) {
+            middleView.removeView(view);
+        }
+
+        middleView.setPadding(0, 0, 0, 0);
+        middleView.addView(view, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+
+        //设置阴影
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+//            if (leftMask != null)
+//                middleView.removeView(leftMask);
+//            else {
+//                leftMask = new ImageView(context);
+//                leftMask.setBackgroundResource(R.drawable.middle_left);
+//            }
+//            if (rightMask != null)
+//                middleView.removeView(rightMask);
+//            else {
+//                rightMask = new ImageView(context);
+//                rightMask.setBackgroundResource(R.drawable.middle_right);
+//            }
+//            FrameLayout.LayoutParams f = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT);
+//            f.gravity = Gravity.RIGHT;
+//            middleView.addView(leftMask, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT));
+//            middleView.addView(rightMask, f);
+//        }
+
+    }
+
+    public void setLeftMenu(@LayoutRes int resId) {
+        setLeftMenu(LayoutInflater.from(getContext()).inflate(resId, null));
     }
 
     public void setLeftMenu(View view) {
@@ -94,43 +130,35 @@ public class CustomMenu extends RelativeLayout {
         leftMenu.addView(view);
     }
 
-    public void setContentView(@LayoutRes int resid) {
-        setContentView(LayoutInflater.from(getContext()).inflate(resid, null));
+    public void setLeftShadow(@DrawableRes int resId) {
+        setLeftShadow(getResources().getDrawable(resId));
     }
 
-    public void setContentView(View view) {
+    public void setLeftShadow(Drawable shadowLeft) {
+        mShadowLeft = shadowLeft;
+        invalidate();
+    }
+
+    public void setRightMenu(@LayoutRes int resId) {
+        setRightMenu(LayoutInflater.from(getContext()).inflate(resId, null));
+    }
+
+    public void setRightMenu(View view) {
+        initRightMenu();
         if (view != null) {
-            middleView.removeView(view);
+            rightMenu.removeView(view);
         }
-
-        middleView.setPadding(0, 0, 0, 0);
-        middleView.addView(view, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        Log.e("", "left:" + middleView.getPaddingLeft());
-
-        //设置阴影
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            if (leftMask != null)
-                middleView.removeView(leftMask);
-            else {
-                leftMask = new ImageView(context);
-                leftMask.setBackgroundResource(R.drawable.middle_left);
-            }
-            if (rightMask != null)
-                middleView.removeView(rightMask);
-            else {
-                rightMask = new ImageView(context);
-                rightMask.setBackgroundResource(R.drawable.middle_right);
-            }
-            FrameLayout.LayoutParams f = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT);
-            f.gravity = Gravity.RIGHT;
-            middleView.addView(leftMask, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT));
-            middleView.addView(rightMask, f);
-        }
-
+        rightMenu.setPadding(0, 0, 0, 0);
+        rightMenu.addView(view);
     }
 
-    public void setRightMenu(@LayoutRes int resid) {
-        setRightMenu(LayoutInflater.from(getContext()).inflate(resid, null));
+    public void setRightShadow(@DrawableRes int resId) {
+        setRightShadow(getResources().getDrawable(resId));
+    }
+
+    public void setRightShadow(Drawable shadowRight) {
+        mShadowRight = shadowRight;
+        invalidate();
     }
 
     public State getState() {
@@ -162,19 +190,10 @@ public class CustomMenu extends RelativeLayout {
             mScrollerSlowDownAfter.startScroll(getScrollX(), 0, -getScrollX(), 0);
     }
 
-    public void setRightMenu(View view) {
-        initRightMenu();
-        if (view != null) {
-            rightMenu.removeView(view);
-        }
-        rightMenu.setPadding(0, 0, 0, 0);
-        rightMenu.addView(view);
-    }
-
     private void initView(Context context) {
         this.context = context;
         middleView = new FrameLayout(context);
-        middleView.setBackgroundColor(Color.TRANSPARENT);
+//        middleView.setBackgroundColor(Color.TRANSPARENT);
 //        middleMask = new FrameLayout(context);
 
 //        middleMask.setBackgroundColor(0x88000000);
@@ -202,10 +221,10 @@ public class CustomMenu extends RelativeLayout {
         leftMenu = new FrameLayout(context);
 
         //设置阴影
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            leftMenu.setElevation(120);
-        }
-        leftMenu.setBackgroundColor(Color.TRANSPARENT);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            leftMenu.setElevation(120);
+//        }
+//        leftMenu.setBackgroundColor(Color.TRANSPARENT);
         addView(leftMenu);
     }
 
@@ -215,10 +234,10 @@ public class CustomMenu extends RelativeLayout {
         rightMenu = new FrameLayout(context);
 
         //设置阴影
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            rightMenu.setElevation(120);
-        }
-        rightMenu.setBackgroundColor(Color.TRANSPARENT);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            rightMenu.setElevation(120);
+//        }
+//        rightMenu.setBackgroundColor(Color.TRANSPARENT);
         addView(rightMenu);
     }
 
@@ -488,6 +507,26 @@ public class CustomMenu extends RelativeLayout {
             mVelocityTracker.recycle();
             mVelocityTracker = null;
         }
+    }
+
+    @Override
+    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+        final boolean result = super.drawChild(canvas, child, drawingTime);
+        if (mShadowLeft != null) {
+            final int shadowWidth = mShadowLeft.getIntrinsicWidth();
+            final int childRight = child.getRight();
+            mShadowLeft.setBounds(childRight, child.getTop(),
+                    childRight + shadowWidth, child.getBottom());
+            mShadowLeft.draw(canvas);
+        }
+        if (mShadowRight != null) {
+            final int shadowWidth = mShadowRight.getIntrinsicWidth();
+            final int childLeft = child.getLeft();
+            mShadowRight.setBounds(childLeft - shadowWidth, child.getTop(),
+                    childLeft, child.getBottom());
+            mShadowRight.draw(canvas);
+        }
+        return result;
     }
 
     public enum State {

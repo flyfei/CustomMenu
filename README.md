@@ -51,7 +51,29 @@ customMenu.setLeftMenu(leftMenu);
 ImageView rightMenu = new ImageView(this);
 rightMenu.setBackgroundResource(R.drawable.left_view);
 customMenu.setRightMenu(rightMenu);
+
+//Open Left Menu
+customMenu.openLeftMenuIfPossible();
+
+//Open Right Menu
+customMenu.openRightMenuIfPossible();
+
+//Close Menu
+customMenu.closeMenu();
+
+//Get State
+customMenu.getState()
+
+//Setting the right Shadow
+setRightShadow(int resId);
+setRightShadow(Drawable shadowRight);
+
+//Setting the left Shadow
+setLeftShadow(int resId);
+setLeftShadow(Drawable shadowLeft);
 ```
+
+* [Shadow picture resources]()
 
 ## Latest Version
 
