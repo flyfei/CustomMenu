@@ -76,15 +76,20 @@ public class CustomMenu extends RelativeLayout {
     private Drawable mShadowLeft;
     private Drawable mShadowRight;
 
+
     public CustomMenu(Context context) {
-        super(context);
-        initView(context);
+        this(context, null);
     }
 
     public CustomMenu(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
+    }
+
+    public CustomMenu(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         initView(context);
     }
+
 
     public void setContentView(@LayoutRes int resId) {
         setContentView(LayoutInflater.from(getContext()).inflate(resId, null));
@@ -172,8 +177,10 @@ public class CustomMenu extends RelativeLayout {
         if (leftMenu != null) {
             // If the view is rolling, stop
             stopAllScroll();
-            if (getScrollX() != -leftMenu.getMeasuredWidth())
+            if (getScrollX() != -leftMenu.getMeasuredWidth()) {
                 mScrollerSlowDownAfter.startScroll(getScrollX(), 0, -leftMenu.getMeasuredWidth() - getScrollX(), 0);
+                invalidate();
+            }
         }
     }
 
@@ -181,16 +188,20 @@ public class CustomMenu extends RelativeLayout {
         if (rightMenu != null) {
             // If the view is rolling, stop
             stopAllScroll();
-            if (getScrollX() != rightMenu.getMeasuredWidth())
+            if (getScrollX() != rightMenu.getMeasuredWidth()) {
                 mScrollerSlowDownAfter.startScroll(getScrollX(), 0, rightMenu.getMeasuredWidth() - getScrollX(), 0);
+                invalidate();
+            }
         }
     }
 
     public void closeMenu() {
         // If the view is rolling, stop
         stopAllScroll();
-        if (getScrollX() != 0)
+        if (getScrollX() != 0) {
             mScrollerSlowDownAfter.startScroll(getScrollX(), 0, -getScrollX(), 0);
+            invalidate();
+        }
     }
 
     private void initView(Context context) {
@@ -253,16 +264,16 @@ public class CustomMenu extends RelativeLayout {
         }
     }
 
-    @Override
-    public void scrollTo(int x, int y) {
-        super.scrollTo(x, y);
-
-
-        //设置遮罩的透明度(这里以 “当前视图的偏移量/菜单的宽度” 的值作为透明度)
-//        int curX = Math.abs(getScrollX());
-//        float scale = curX / (curX > 0 ? (float) (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) : (float) (leftMenu == null ? 0 : leftMenu.getMeasuredWidth()));
-//        middleMask.setAlpha(scale * 0.8f);
-    }
+//    @Override
+//    public void scrollTo(int x, int y) {
+//        super.scrollTo(x, y);
+//
+//
+//        //设置遮罩的透明度(这里以 “当前视图的偏移量/菜单的宽度” 的值作为透明度)
+////        int curX = Math.abs(getScrollX());
+////        float scale = curX / (curX > 0 ? (float) (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) : (float) (leftMenu == null ? 0 : leftMenu.getMeasuredWidth()));
+////        middleMask.setAlpha(scale * 0.8f);
+//    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -459,6 +470,7 @@ public class CustomMenu extends RelativeLayout {
                     mScrollerMoreSlowly.startScroll(curScrollX, 0,
                             -(leftMenu == null ? 0 : leftMenu.getMeasuredWidth()) - curScrollX, 0,
                             200);
+                    invalidate();
                 } else {
                     //完全显示左菜单
                     state = State.LEFT_MENU_OPENS;
@@ -468,6 +480,7 @@ public class CustomMenu extends RelativeLayout {
                     mScrollerMoreSlowly.startScroll(curScrollX, 0,
                             (rightMenu == null ? 0 : rightMenu.getMeasuredWidth()) - curScrollX, 0,
                             200);
+                    invalidate();
                 } else {
                     // 完全显示右菜单
                     state = State.RIGHT_MENU_OPENS;
@@ -476,12 +489,12 @@ public class CustomMenu extends RelativeLayout {
         } else {
             if (curScrollX != 0) {
                 mScrollerMoreSlowly.startScroll(curScrollX, 0, -curScrollX, 0, 200);
+                invalidate();
             } else {
                 // 完全关闭菜单
                 state = State.CLOSE_MENU;
             }
         }
-        invalidate();
     }
 
     public void fling(int velocityX, int velocityY) {
